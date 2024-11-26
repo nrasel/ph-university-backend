@@ -1,13 +1,11 @@
-import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
-import config from '../config';
 import {
   StudentModel,
   TGuardian,
   TlocalGauardian,
   TStudent,
   TUserName,
-} from './students/student.interface';
+} from './student.interface';
 
 const studentNameSchema = new Schema<TUserName>({
   firstName: {
@@ -15,14 +13,6 @@ const studentNameSchema = new Schema<TUserName>({
     trim: true,
     required: [true, 'First name is required'],
     maxLength: [20, 'First name can not be more than 20'],
-    // validate: {
-    //   validator: function (value: string) {
-    //     const firstNameStr = value.charAt(0).toUpperCase() + value.slice(1);
-    //     return firstNameStr === value;
-    //     console.log(value);
-    //   },
-    //   message: '{VALUE} is not in capatalized format',
-    // },
   },
   middleName: {
     type: String,
@@ -33,10 +23,6 @@ const studentNameSchema = new Schema<TUserName>({
     type: String,
     trim: true,
     required: [true, 'Last name is required'],
-    // validate: {
-    //   validator: (value: string) => validator.isAlphanumeric(value),
-    //   message: '{VALUE} is not valid',
-    // },
   },
 });
 
@@ -93,10 +79,11 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, 'Student ID is required'],
       unique: true,
     },
-    password: {
-      type: String,
-      required: [true, 'Password is required'],
-      maxlength: [20, 'Password can not be more than 20 characters'],
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User is is required'],
+      unique: true,
+      ref: 'User',
     },
     name: {
       type: studentNameSchema,
@@ -157,22 +144,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
     },
     profileImg: {
       type: String,
-      // validate: {
-      //   validator: function (v) {
-      //     return /^https?:\/\/.*\.(jpg|jpeg|png|gif)$/.test(v);
-      //   },
-      //   message:
-      //     'Profile image must be a valid URL ending in .jpg, .jpeg, .png, or .gif',
-      // },
-    },
-    isActive: {
-      type: String,
-      enum: {
-        values: ['active', 'block'],
-        message:
-          '{VALUE} is not a valid status. Choose from "active" or "block".',
-      },
-      default: 'active',
     },
     isDeleted: {
       type: Boolean,
@@ -188,24 +159,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 
 studentSchema.virtual('fullName').get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
-});
-
-//pre save middleware/hook
-studentSchema.pre('save', async function (next) {
-  //hashing password and save into  DB
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this;
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rouns)
-  );
-  next();
-});
-
-//post save middleware / hook :will work in create() or save()
-studentSchema.post('save', function (doc, next) {
-  doc.password = '';
-  next();
 });
 
 //Query Middleware
@@ -231,13 +184,4 @@ studentSchema.statics.isUserExists = async function (id: string) {
   return existingUser;
 };
 
-//instance method for finding a student
-
-// studentSchema.methods.isUserExists = async function (id: string) {
-//   const existingUser = await Student.findOne({ id: id });
-//   return existingUser;
-// };
-
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);
-
-
