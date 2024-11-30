@@ -25,33 +25,40 @@ const localGuardianValidationSchema = z.object({
   address: z.string().min(1, 'Local guardian address is required'),
 });
 
-const studentValidationSchema = z.object({
-  id: z.string().min(1, 'Student ID is required'),
-  password: z.string().max(20),
-  name: userNameValidationSchema,
-  gender: z.enum(['male', 'female', 'other'], {
-    required_error: 'Gender is required',
+const CreateStudentValidationSchema = z.object({
+  body: z.object({
+    password: z.string().max(20),
+    student: z.object({
+      name: userNameValidationSchema,
+      gender: z.enum(['male', 'female', 'other'], {
+        required_error: 'Gender is required',
+      }),
+      dateOfBirth: z.date().optional(),
+      email: z
+        .string()
+        .min(1, 'Email is required')
+        .email('Invalid email format'),
+      contactNo: z.string().min(1, 'Contact number is required'),
+      emergencyContactNo: z
+        .string()
+        .min(1, 'Emergency contact number is required'),
+      bloodGroup: z
+        .enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'], {
+          required_error: 'Blood group is required',
+        })
+        .optional(),
+      presentAddress: z.string().min(1, 'Present address is required'),
+      permanentAddress: z.string().min(1, 'Permanent address is required'),
+      guardian: guardianValidationSchema,
+      localGauardian: localGuardianValidationSchema,
+      profileImg: z
+        .string()
+        .url('Profile image must be a valid URL')
+        .optional(),
+    }),
   }),
-  dateOfBirth: z.string().min(1, 'Date of birth is required'),
-  email: z.string().min(1, 'Email is required').email('Invalid email format'),
-  contactNo: z.string().min(1, 'Contact number is required'),
-  emergencyContactNo: z.string().min(1, 'Emergency contact number is required'),
-  bloodGroup: z
-    .enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'], {
-      required_error: 'Blood group is required',
-    })
-    .optional(),
-  presentAddress: z.string().min(1, 'Present address is required'),
-  permanentAddress: z.string().min(1, 'Permanent address is required'),
-  guardian: guardianValidationSchema,
-  localGauardian: localGuardianValidationSchema,
-  profileImg: z.string().url('Profile image must be a valid URL').optional(),
-  isActive: z
-    .enum(['active', 'block'], {
-      required_error: 'Status is required',
-    })
-    .default('active'),
-    isDeleted:z.boolean()
 });
 
-export default studentValidationSchema;
+export const studentValidations = {
+  studentValidationSchema: CreateStudentValidationSchema,
+};
