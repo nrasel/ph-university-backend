@@ -33,7 +33,7 @@ const CreateStudentValidationSchema = z.object({
       gender: z.enum(['male', 'female', 'other'], {
         required_error: 'Gender is required',
       }),
-      dateOfBirth: z.date().optional(),
+      dateOfBirth: z.string().optional(),
       email: z
         .string()
         .min(1, 'Email is required')
@@ -51,14 +51,12 @@ const CreateStudentValidationSchema = z.object({
       permanentAddress: z.string().min(1, 'Permanent address is required'),
       guardian: guardianValidationSchema,
       localGauardian: localGuardianValidationSchema,
-      profileImg: z
-        .string()
-        .url('Profile image must be a valid URL')
-        .optional(),
+      admissionSemester: z.string(),
+      profileImg: z.string(),
     }),
   }),
 });
 
 export const studentValidations = {
-  studentValidationSchema: CreateStudentValidationSchema,
+  CreateStudentValidationSchema,
 };
