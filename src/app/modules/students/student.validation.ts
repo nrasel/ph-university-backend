@@ -57,6 +57,92 @@ const CreateStudentValidationSchema = z.object({
   }),
 });
 
+const updateNameValidationSchema = z.object({
+  firstName: z
+    .string()
+    .min(1, 'First name is required')
+    .max(20, 'First name cannot exceed 20 characters')
+    .optional(),
+  middleName: z.string().min(1, 'Middle name is required').optional(),
+  lastName: z.string().min(1, 'Last name is required').optional(),
+});
+
+const updateGuardianValidationSchema = z.object({
+  fatherName: z.string().min(1, 'Father name is required').optional(),
+  fatherOccupation: z
+    .string()
+    .min(1, 'Father occupation is required')
+    .optional(),
+  fatherContactNo: z
+    .string()
+    .min(1, 'Father contact number is required')
+    .optional(),
+  motherName: z.string().min(1, 'Mother name is required').optional(),
+  motherOccupation: z
+    .string()
+    .min(1, 'Mother occupation is required')
+    .optional(),
+  motherContactNo: z
+    .string()
+    .min(1, 'Mother contact number is required')
+    .optional(),
+});
+
+const updateLocalGuardianValidationSchema = z.object({
+  name: z.string().min(1, 'Local guardian name is required').optional(),
+  occupation: z
+    .string()
+    .min(1, 'Local guardian occupation is required')
+    .optional(),
+  contactNo: z
+    .string()
+    .min(1, 'Local guardian contact number is required')
+    .optional(),
+  address: z.string().min(1, 'Local guardian address is required').optional(),
+});
+
+const updateStudentValidationSchema = z.object({
+  body: z.object({
+    student: z.object({
+      name: updateNameValidationSchema.optional(),
+      gender: z
+        .enum(['male', 'female', 'other'], {
+          required_error: 'Gender is required',
+        })
+        .optional(),
+      dateOfBirth: z.string().optional(),
+      email: z
+        .string()
+        .min(1, 'Email is required')
+        .email('Invalid email format')
+        .optional(),
+      contactNo: z.string().min(1, 'Contact number is required').optional(),
+      emergencyContactNo: z
+        .string()
+        .min(1, 'Emergency contact number is required')
+        .optional(),
+      bloodGroup: z
+        .enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'], {
+          required_error: 'Blood group is required',
+        })
+        .optional(),
+      presentAddress: z
+        .string()
+        .min(1, 'Present address is required')
+        .optional(),
+      permanentAddress: z
+        .string()
+        .min(1, 'Permanent address is required')
+        .optional(),
+      guardian: updateGuardianValidationSchema.optional(),
+      localGauardian: updateLocalGuardianValidationSchema.optional(),
+      admissionSemester: z.string().optional(),
+      profileImg: z.string().optional(),
+    }),
+  }),
+});
+
 export const studentValidations = {
   CreateStudentValidationSchema,
+  updateStudentValidationSchema,
 };
