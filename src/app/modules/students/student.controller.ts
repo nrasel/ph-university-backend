@@ -4,11 +4,11 @@ import sendResponse from '../../utility/sendResponse';
 import { StudentServices } from './student.service';
 
 const getAllStudents = catchAsync(async (req, res) => {
-  const result = await StudentServices.getAllStudentsFromDB();
+  const result = await StudentServices.getAllStudentsFromDB(req.query);
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Student is created successfuly',
+    message: 'Student is reterived successfuly',
     data: result,
   });
 });
@@ -19,7 +19,7 @@ const getSingleStudent: RequestHandler = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Student is created successfuly',
+    message: 'Student is reterived successfuly',
     data: result,
   });
 });

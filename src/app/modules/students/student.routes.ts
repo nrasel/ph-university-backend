@@ -6,7 +6,7 @@ import { studentValidations } from './student.validation';
 const router = express.Router();
 
 //wil call controller function
-router.get('/get-all-student', StudentController.getAllStudents);
+router.get('/', StudentController.getAllStudents);
 router.get('/:studentId', StudentController.getSingleStudent);
 router.patch(
   '/:studentId',
