@@ -2,12 +2,12 @@
 
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import QueryBuilder from '../../builder/Querybuilder';
 import AppError from '../../errors/AppError';
 import { User } from '../users/user.model';
 import { studentSearchableField } from './student.constant';
 import { TStudent } from './student.interface';
 import { Student } from './student.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   // const studentSearchableField = ['email', 'name.firstName', 'presentAddress'];
