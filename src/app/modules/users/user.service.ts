@@ -69,13 +69,16 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
 };
 
 const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
-  //create a user object
+  // create a user object
   const userData: Partial<TUser> = {};
-  // if password is not give, use default password
+
+  //if password is not given , use deafult password
   userData.password = password || (config.default_password as string);
 
-  //set user role
+  //set student role
   userData.role = 'faculty';
+
+  // find academic department info
   const academicDepartment = await AcademicDepartment.findById(
     payload.academicDepartment
   );
@@ -85,27 +88,31 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   }
 
   const session = await mongoose.startSession();
+
   try {
     session.startTransaction();
-    //set gendrated id
+    //set  generated id
     userData.id = await generateFacultyId();
 
-    //create a user (transaction-1)
-    const newUser = await User.create([userData], { session }); //array
+    // create a user (transaction-1)
+    const newUser = await User.create([userData], { session }); // array
 
     //create a faculty
     if (!newUser.length) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create');
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
     }
+    // set id , _id as user
     payload.id = newUser[0].id;
-    payload.user = newUser[0]._id;
+    payload.user = newUser[0]._id; //reference _id
 
-    //create a faculty (transaction-2)
+    // create a faculty (transaction-2)
+
     const newFaculty = await Faculty.create([payload], { session });
 
     if (!newFaculty.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create faculty');
     }
+
     await session.commitTransaction();
     await session.endSession();
 
