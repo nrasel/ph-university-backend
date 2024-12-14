@@ -1,4 +1,5 @@
 import express from 'express';
+import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { AcademicFacultyController } from './academicFaculty.controller';
 import { academicFacultyValidation } from './academicFaculty.validation';
@@ -19,6 +20,6 @@ router.patch(
   ),
   AcademicFacultyController.updateAcademicFaculties
 );
-router.get('/', AcademicFacultyController.getAllAcademicFaculties);
+router.get('/', auth(), AcademicFacultyController.getAllAcademicFaculties);
 
 export const AcademicFacultiesRoutes = router;
