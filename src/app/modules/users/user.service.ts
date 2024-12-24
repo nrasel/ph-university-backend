@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import config from '../../config';
 
 import AppError from '../../errors/AppError';
+import { sendImageToCloudinary } from '../../utility/sendImageToCloudinary';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
 import { TAdmin } from '../Admin/admin.interface';
@@ -14,13 +15,18 @@ import { TStudent } from '../students/student.interface';
 import { Student } from '../students/student.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
+
 import {
   generatedAdminId,
   generateFacultyId,
   generateStudentId,
 } from './users.utils';
 
-const createStudentIntoDB = async (password: string, payload: TStudent) => {
+const createStudentIntoDB = async (
+  file: any,
+  password: string,
+  payload: TStudent
+) => {
   const userData: Partial<TUser> = {};
 
   //if password is not given , use deafult password
@@ -42,6 +48,10 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     //set generated id
     userData.id = await generateStudentId(admissionSemester);
 
+    const imageName = `${userData.id}${payload?.name?.firstName}`;
+    const path = file?.path;
+    const profileImage = await sendImageToCloudinary(imageName, path);
+
     //create a user {transation-1}
     const newUser = await User.create([userData], { session });
 
@@ -51,7 +61,8 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     }
     //set id, _id as user
     payload.id = newUser[0].id;
-    payload.user = newUser[0]._id; //reference _id
+    payload.user = newUser[0]._id;
+    payload.profileImg = profileImage.secure_url; //reference _id
 
     //create a user {transation-2}
     const newStudent = await Student.create([payload], { session });
@@ -174,8 +185,38 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 };
 
+const getMeFromDB = async (userId: string, role: string) => {
+  let result = null;
+  if (role === 'student') {
+    result = await Student.findOne({ id: userId }).populate(
+      'admissionSemester'
+    );
+    // .populate({
+    //   path: 'academicDepartment',
+    //   populate: {
+    //     path: 'academicFaculty',
+    //   },
+    // });
+  } else if (role === 'admin') {
+    result = await Admin.findOne({ id: userId }).populate('user');
+  } else if (role === 'faculty') {
+    result = await Faculty.findOne({ id: userId }).populate('user');
+  }
+
+  console.log(userId, role);
+
+  return result;
+};
+const changeStatus = async (id: string, payload: { status: string }) => {
+  const result = await User.findByIdAndUpdate(id, payload, { new: true });
+
+  return result;
+};
+
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
+  getMeFromDB,
+  changeStatus,
 };

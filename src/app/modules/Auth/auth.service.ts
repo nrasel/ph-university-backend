@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import AppError from '../../errors/AppError';
 import { sendEmail } from '../../utility/sendEmail';
 import { User } from '../users/user.model';
 import { TLoginUser } from './auth.interface';
-import { createToken } from './auth.utils';
+import { createToken, verifyToken } from './auth.utils';
 
 const loginUser = async (payload: TLoginUser) => {
   //checking if the user is exist
@@ -118,10 +118,7 @@ const changedPassword = async (
 
 const refreshToken = async (token: string) => {
   //check if the token is valid or not
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
 
   const { userId, iat } = decoded;
 
@@ -215,15 +212,11 @@ const resetPassword = async (
   payload: { id: string; newPassword: string },
   token: string
 ) => {
-  const decoded = jwt.verify(
-    token,
-    config.jwt_access_secret as string
-  ) as JwtPayload;
-  console.log(decoded);
+  const decoded = verifyToken(token, config.jwt_access_secret as string);
 
   // const { userId, iat } = decoded;
   const user = await User.isUserExistsByCustomId(payload.id);
-  console.log(payload.id)
+  console.log(payload.id);
 
   if (decoded.userId !== payload.id) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
