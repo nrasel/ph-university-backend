@@ -40,6 +40,19 @@ const createStudentIntoDB = async (
   const admissionSemester = await AcademicSemester.findById(
     payload.admissionSemester
   );
+  if (!admissionSemester) {
+    throw new AppError(400, 'Admission semester not found');
+  }
+
+  const academicDepartment = await AcademicDepartment.findById(
+    payload.academicDepartment
+  );
+
+  if (!academicDepartment) {
+    throw new AppError(400, 'Academic departmet not found');
+  }
+
+  payload.academicFaculty = academicDepartment?.academicFaculty;
 
   const session = await mongoose.startSession();
 
@@ -48,9 +61,12 @@ const createStudentIntoDB = async (
     //set generated id
     userData.id = await generateStudentId(admissionSemester);
 
-    const imageName = `${userData.id}${payload?.name?.firstName}`;
-    const path = file?.path;
-    const profileImage = await sendImageToCloudinary(imageName, path);
+    if (file) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = file?.path;
+      const profileImage = await sendImageToCloudinary(imageName, path);
+      payload.profileImg = profileImage.secure_url; //reference _id
+    }
 
     //create a user {transation-1}
     const newUser = await User.create([userData], { session });
@@ -62,7 +78,6 @@ const createStudentIntoDB = async (
     //set id, _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
-    payload.profileImg = profileImage.secure_url; //reference _id
 
     //create a user {transation-2}
     const newStudent = await Student.create([payload], { session });
@@ -80,7 +95,11 @@ const createStudentIntoDB = async (
   }
 };
 
-const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+const createFacultyIntoDB = async (
+  file: any,
+  password: string,
+  payload: TFaculty
+) => {
   // create a user object
   const userData: Partial<TUser> = {};
 
@@ -106,6 +125,13 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
     session.startTransaction();
     //set  generated id
     userData.id = await generateFacultyId();
+
+    if (file) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = file?.path;
+      const profileImage = await sendImageToCloudinary(imageName, path);
+      payload.profileImg = profileImage.secure_url; //reference _id
+    }
 
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session }); // array
@@ -137,7 +163,11 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   }
 };
 
-const createAdminIntoDB = async (password: string, payload: TAdmin) => {
+const createAdminIntoDB = async (
+  file: any,
+  password: string,
+  payload: TAdmin
+) => {
   //create a user object
   const userData: Partial<TUser> = {};
 
@@ -154,6 +184,13 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     // set generated id
     session.startTransaction();
     userData.id = await generatedAdminId();
+
+    if (file) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = file?.path;
+      const profileImage = await sendImageToCloudinary(imageName, path);
+      payload.profileImg = profileImage.secure_url; //reference _id
+    }
 
     //create admin (transaction-1)
     const newUser = await User.create([userData], { session });
