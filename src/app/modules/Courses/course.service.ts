@@ -22,7 +22,8 @@ const getAllCourseFromDB = async (query: Record<string, unknown>) => {
     .paginate()
     .fields();
   const result = await courseQuery.modelQuery;
-  return result;
+  const meta = await courseQuery.countTotal();
+  return { meta, result };
 };
 const getSingleCourseFromDB = async (id: string) => {
   const result = await Course.findById(id).populate(
@@ -138,7 +139,7 @@ const removeFacultiesWithCourseFromDB = async (
   const result = await CourseFaculty.findByIdAndUpdate(
     id,
     {
-      $pull:{faculties:{$in: payload}}
+      $pull: { faculties: { $in: payload } },
     },
     {
       new: true,

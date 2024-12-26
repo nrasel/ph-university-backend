@@ -90,8 +90,9 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     .paginate()
     .fields();
 
+    const meta =await studentQuery.countTotal();
   const result = await studentQuery.modelQuery;
-  return result;
+  return { meta, result };
 };
 const getSingleStudentsFromDB = async (id: string) => {
   // const result = await Student.findOne({ id });
