@@ -14,7 +14,12 @@ router.post(
 
 router.post(
   '/change-password',
-  auth(USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.faculty,
+    USER_ROLE.student
+  ),
   validateRequest(authValidation.changePasswordValidationSchema),
   authController.changePassword
 );
@@ -35,7 +40,5 @@ router.post(
   validateRequest(authValidation.resetPasswordValidationSchema),
   authController.resetPassword
 );
-
-
 
 export const authRoutes = router;

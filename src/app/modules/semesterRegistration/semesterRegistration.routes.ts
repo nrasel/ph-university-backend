@@ -2,6 +2,8 @@ import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
 import { SemesterRegistrationController } from './semesterRegistration.controller';
 import { SemesterRegistrationValidations } from './semesterRegistration.validation';
+import auth from '../../middlewares/auth';
+import { USER_ROLE } from '../users/user.constant';
 const router = express.Router();
 
 router.post(
@@ -19,11 +21,22 @@ router.get(
 
 router.patch(
   '/:id',
+  auth(USER_ROLE.superAdmin,USER_ROLE.admin),
   validateRequest(
     SemesterRegistrationValidations.updateSemesterRegistrationValidation
   ),
   SemesterRegistrationController.updateSemesterRegistration
 );
+
+
+//eita thik korte hobe
+// router.delete(
+//   '/:id',
+//   validateRequest(
+//     SemesterRegistrationValidations.updateSemesterRegistrationValidation
+//   ),
+//   SemesterRegistrationController.updateSemesterRegistration
+// );
 
 router.get('/', SemesterRegistrationController.getAllSemesterRegistrations);
 

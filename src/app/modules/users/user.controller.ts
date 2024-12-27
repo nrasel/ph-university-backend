@@ -3,11 +3,14 @@ import sendResponse from '../../utility/sendResponse';
 import { UserServices } from './user.service';
 
 const createStudent = catchAsync(async (req, res) => {
- const { password, student: studentData } = req.body;
-  // console.log(req.file);
+  const { password, student: studentData } = req.body;
 
 
-   const result = await UserServices.createStudentIntoDB(req.file,password, studentData);
+  const result = await UserServices.createStudentIntoDB(
+    req.file,
+    password,
+    studentData
+  );
 
   sendResponse(res, {
     statusCode: 200,
@@ -20,7 +23,11 @@ const createStudent = catchAsync(async (req, res) => {
 const createFaculty = catchAsync(async (req, res) => {
   const { password, faculty: facultyData } = req.body;
 
-  const result = await UserServices.createFacultyIntoDB(req.file,password, facultyData);
+  const result = await UserServices.createFacultyIntoDB(
+    req.file,
+    password,
+    facultyData
+  );
 
   sendResponse(res, {
     statusCode: 200,

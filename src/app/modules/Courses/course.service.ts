@@ -132,6 +132,13 @@ const asignFacultiesWithCourseIntoDB = async (
   );
   return result;
 };
+const getFacultiesWithCourseIntoDB = async (courseId: string) => {
+ 
+  const result = await CourseFaculty.findOne({ course: courseId }).populate(
+    'faculties'
+  );
+  return result;
+};
 const removeFacultiesWithCourseFromDB = async (
   id: string,
   payload: Partial<TCoursefaculty>
@@ -156,4 +163,5 @@ export const CourseServices = {
   updateCourseIntoDB,
   asignFacultiesWithCourseIntoDB,
   removeFacultiesWithCourseFromDB,
+  getFacultiesWithCourseIntoDB,
 };
