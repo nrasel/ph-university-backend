@@ -1,5 +1,6 @@
 import httpStatus from 'http-status';
 import config from '../../config';
+import AppError from '../../errors/AppError';
 import catchAsync from '../../utility/catchAsync';
 import sendResponse from '../../utility/sendResponse';
 import { AuthService } from './auth.service';
@@ -60,8 +61,11 @@ const forgetPassword = catchAsync(async (req, res) => {
   });
 });
 const resetPassword = catchAsync(async (req, res) => {
-  const token =req.headers.authorization
-  const result = await AuthService.resetPassword(req.body,token);
+  const token = req?.headers?.authorization;
+  if (!token) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorised');
+  }
+  const result = await AuthService.resetPassword(req.body, token);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
