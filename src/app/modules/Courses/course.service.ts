@@ -23,7 +23,10 @@ const getAllCourseFromDB = async (query: Record<string, unknown>) => {
     .fields();
   const result = await courseQuery.modelQuery;
   const meta = await courseQuery.countTotal();
-  return { meta, result };
+  return {
+    meta,
+    result,
+  };
 };
 const getSingleCourseFromDB = async (id: string) => {
   const result = await Course.findById(id).populate(
@@ -133,7 +136,6 @@ const asignFacultiesWithCourseIntoDB = async (
   return result;
 };
 const getFacultiesWithCourseIntoDB = async (courseId: string) => {
- 
   const result = await CourseFaculty.findOne({ course: courseId }).populate(
     'faculties'
   );

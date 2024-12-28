@@ -9,7 +9,8 @@ const getAllStudents = catchAsync(async (req, res) => {
     statusCode: 200,
     success: true,
     message: 'Student is reterived successfuly',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

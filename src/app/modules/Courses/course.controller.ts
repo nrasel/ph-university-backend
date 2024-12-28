@@ -18,7 +18,8 @@ const getAllCourses = catchAsync(async (req, res) => {
     statusCode: 200,
     success: true,
     message: 'Course reterived successfully',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 const getSingleCourses = catchAsync(async (req, res) => {
