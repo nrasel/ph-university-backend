@@ -74,6 +74,7 @@ const assignFacultiesWithCourse = catchAsync(async (req, res) => {
 });
 const getFacultiesWithCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
+  console.log('this is', courseId);
 
   const result = await CourseServices.getFacultiesWithCourseIntoDB(courseId);
 

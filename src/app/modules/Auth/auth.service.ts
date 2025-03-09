@@ -150,7 +150,7 @@ const refreshToken = async (token: string) => {
     user.passwordChangedAt &&
     User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
   ) {
-    throw new AppError(httpStatus.FORBIDDEN, 'You are notauthorized!');
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
   }
 
   //create token and sent to the  client

@@ -50,7 +50,7 @@ router.get(
     USER_ROLE.faculty,
     USER_ROLE.student
   ),
-  validateRequest(CourseValidation.facultiesWithCourseValidationSchema),
+  // validateRequest(CourseValidation.facultiesWithCourseValidationSchema),
   CourseControllers.getFacultiesWithCourse
 );
 

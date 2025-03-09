@@ -8,12 +8,11 @@ import { AuthService } from './auth.service';
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthService.loginUser(req.body);
   const { refreshToken, accessToken, needsPasswordChange } = result;
-  console.log(refreshToken);
 
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: 'none',
+    sameSite: true,
     maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
@@ -41,6 +40,7 @@ const changePassword = catchAsync(async (req, res) => {
 
 const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
+
   const result = await AuthService.refreshToken(refreshToken);
 
   sendResponse(res, {
